@@ -1,4 +1,4 @@
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -15,10 +15,10 @@ import { History } from 'aurelia-history';
 import { EventAggregator } from 'aurelia-event-aggregator';
 
 export function _normalizeAbsolutePath(path, hasPushState) {
-  var absolute = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
+  var absolute = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
   if (!hasPushState && path[0] !== '#') {
-    path = '#' + path;
+    path = '#!' + path;
   }
 
   if (hasPushState && absolute) {
@@ -60,7 +60,7 @@ export function _resolveUrl(fragment, baseUrl, hasPushState) {
   return _createRootedPath(fragment, baseUrl, hasPushState);
 }
 
-var isRootedPath = /^#?\//;
+var isRootedPath = /^#?!?\//;
 var isAbsoluteUrl = /^([a-z][a-z0-9+\-.]*:)?\/\//i;
 
 export var pipelineStatus = {
@@ -323,7 +323,7 @@ export var NavigationInstruction = function () {
   };
 
   NavigationInstruction.prototype._buildTitle = function _buildTitle() {
-    var separator = arguments.length <= 0 || arguments[0] === undefined ? ' | ' : arguments[0];
+    var separator = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ' | ';
 
     var title = '';
     var childTitles = [];
@@ -394,7 +394,7 @@ export function isNavigationCommand(obj) {
 
 export var Redirect = function () {
   function Redirect(url) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     
 
@@ -417,8 +417,8 @@ export var Redirect = function () {
 
 export var RedirectToRoute = function () {
   function RedirectToRoute(route) {
-    var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-    var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+    var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     
 
@@ -490,9 +490,9 @@ export var RouterConfiguration = function () {
 
       if (Array.isArray(config.route)) {
         for (var i = 0, ii = config.route.length; i < ii; ++i) {
-          var current = Object.assign({}, config);
-          current.route = config.route[i];
-          routeConfigs.push(current);
+          var _current = Object.assign({}, config);
+          _current.route = config.route[i];
+          routeConfigs.push(_current);
         }
       } else {
         routeConfigs.push(Object.assign({}, config));
@@ -546,9 +546,9 @@ export var RouterConfiguration = function () {
 
       var pipelineProvider = router.pipelineProvider;
       for (var _i2 = 0, _ii2 = pipelineSteps.length; _i2 < _ii2; ++_i2) {
-        var _pipelineSteps$_i = pipelineSteps[_i2];
-        var _name = _pipelineSteps$_i.name;
-        var step = _pipelineSteps$_i.step;
+        var _pipelineSteps$_i = pipelineSteps[_i2],
+            _name = _pipelineSteps$_i.name,
+            step = _pipelineSteps$_i.step;
 
         pipelineProvider.addStep(_name, step);
       }
@@ -647,11 +647,11 @@ export function _buildNavigationPlan(instruction, forceLifecycleMinimum) {
     });
   }
 
-  for (var _viewPortName in config.viewPorts) {
-    plan[_viewPortName] = {
-      name: _viewPortName,
+  for (var viewPortName in config.viewPorts) {
+    plan[viewPortName] = {
+      name: viewPortName,
       strategy: activationStrategy.replace,
-      config: instruction.config.viewPorts[_viewPortName]
+      config: instruction.config.viewPorts[viewPortName]
     };
   }
 
@@ -816,7 +816,7 @@ export var Router = function () {
   };
 
   Router.prototype.generate = function generate(name, params) {
-    var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
     var hasRoute = this._recognizer.hasRoute(name);
     if ((!this.isConfigured || !hasRoute) && this.parent) {
@@ -942,11 +942,11 @@ export var Router = function () {
     var nav = this.navigation;
 
     for (var i = 0, length = nav.length; i < length; i++) {
-      var current = nav[i];
-      if (!current.config.href) {
-        current.href = _createRootedPath(current.relativeHref, this.baseUrl, this.history._hasPushState);
+      var _current2 = nav[i];
+      if (!_current2.config.href) {
+        _current2.href = _createRootedPath(_current2.relativeHref, this.baseUrl, this.history._hasPushState);
       } else {
-        current.href = _normalizeAbsolutePath(current.config.href, this.history._hasPushState);
+        _current2.href = _normalizeAbsolutePath(_current2.config.href, this.history._hasPushState);
       }
     }
   };
@@ -959,8 +959,8 @@ export var Router = function () {
   };
 
   Router.prototype._createNavigationInstruction = function _createNavigationInstruction() {
-    var url = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
-    var parentInstruction = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+    var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    var parentInstruction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
     var fragment = url;
     var queryString = '';
@@ -1157,7 +1157,7 @@ function processDeactivatable(plan, callbackName, next, ignoreResult) {
 }
 
 function findDeactivatable(plan, callbackName) {
-  var list = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
+  var list = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
   for (var viewPortName in plan) {
     var _viewPortPlan = plan[viewPortName];
@@ -1219,19 +1219,13 @@ function processActivatable(navigationInstruction, callbackName, next, ignoreRes
 
     if (i < length) {
       try {
-        var _ret3 = function () {
-          var _current$viewModel;
+        var _current3$viewModel;
 
-          var current = infos[i];
-          var result = (_current$viewModel = current.viewModel)[callbackName].apply(_current$viewModel, current.lifecycleArgs);
-          return {
-            v: processPotential(result, function (val) {
-              return inspect(val, current.router);
-            }, next.cancel)
-          };
-        }();
-
-        if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object") return _ret3.v;
+        var _current3 = infos[i];
+        var _result2 = (_current3$viewModel = _current3.viewModel)[callbackName].apply(_current3$viewModel, _current3.lifecycleArgs);
+        return processPotential(_result2, function (val) {
+          return inspect(val, _current3.router);
+        }, next.cancel);
       } catch (error) {
         return next.cancel(error);
       }
@@ -1244,7 +1238,7 @@ function processActivatable(navigationInstruction, callbackName, next, ignoreRes
 }
 
 function findActivatable(navigationInstruction, callbackName) {
-  var list = arguments.length <= 2 || arguments[2] === undefined ? [] : arguments[2];
+  var list = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
   var router = arguments[3];
 
   var plan = navigationInstruction.plan;
@@ -1322,35 +1316,29 @@ function processPotential(obj, resolve, reject) {
   }
 
   if (obj && typeof obj.subscribe === 'function') {
-    var _ret4 = function () {
-      var obs = obj;
-      return {
-        v: new SafeSubscription(function (sub) {
-          return obs.subscribe({
-            next: function next() {
-              if (sub.subscribed) {
-                sub.unsubscribe();
-                resolve(obj);
-              }
-            },
-            error: function error(_error) {
-              if (sub.subscribed) {
-                sub.unsubscribe();
-                reject(_error);
-              }
-            },
-            complete: function complete() {
-              if (sub.subscribed) {
-                sub.unsubscribe();
-                resolve(obj);
-              }
-            }
-          });
-        })
-      };
-    }();
-
-    if ((typeof _ret4 === 'undefined' ? 'undefined' : _typeof(_ret4)) === "object") return _ret4.v;
+    var obs = obj;
+    return new SafeSubscription(function (sub) {
+      return obs.subscribe({
+        next: function next() {
+          if (sub.subscribed) {
+            sub.unsubscribe();
+            resolve(obj);
+          }
+        },
+        error: function error(_error) {
+          if (sub.subscribed) {
+            sub.unsubscribe();
+            reject(_error);
+          }
+        },
+        complete: function complete() {
+          if (sub.subscribed) {
+            sub.unsubscribe();
+            resolve(obj);
+          }
+        }
+      });
+    });
   }
 
   try {
@@ -1400,7 +1388,7 @@ function loadNewRoute(routeLoader, navigationInstruction) {
 }
 
 function determineWhatToLoad(navigationInstruction) {
-  var toLoad = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+  var toLoad = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
   var plan = navigationInstruction.plan;
 
@@ -1457,27 +1445,21 @@ function loadComponent(routeLoader, navigationInstruction, config) {
   var lifecycleArgs = navigationInstruction.lifecycleArgs;
 
   return routeLoader.loadRoute(router, config, navigationInstruction).then(function (component) {
-    var viewModel = component.viewModel;
-    var childContainer = component.childContainer;
+    var viewModel = component.viewModel,
+        childContainer = component.childContainer;
 
     component.router = router;
     component.config = config;
 
     if ('configureRouter' in viewModel) {
-      var _ret5 = function () {
-        var childRouter = childContainer.getChildRouter();
-        component.childRouter = childRouter;
+      var childRouter = childContainer.getChildRouter();
+      component.childRouter = childRouter;
 
-        return {
-          v: childRouter.configure(function (c) {
-            return viewModel.configureRouter.apply(viewModel, [c, childRouter].concat(lifecycleArgs));
-          }).then(function () {
-            return component;
-          })
-        };
-      }();
-
-      if ((typeof _ret5 === 'undefined' ? 'undefined' : _typeof(_ret5)) === "object") return _ret5.v;
+      return childRouter.configure(function (c) {
+        return viewModel.configureRouter.apply(viewModel, [c, childRouter].concat(lifecycleArgs));
+      }).then(function () {
+        return component;
+      });
     }
 
     return component;
@@ -1553,7 +1535,7 @@ export var PipelineProvider = function () {
   };
 
   PipelineProvider.prototype._clearSteps = function _clearSteps() {
-    var name = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
     var slot = this._findStep(name);
     if (slot) {
@@ -1621,33 +1603,21 @@ export var AppRouter = function (_Router) {
     _Router.prototype.registerViewPort.call(this, viewPort, name);
 
     if (!this.isActive) {
-      var _ret6 = function () {
-        var viewModel = _this12._findViewModel(viewPort);
-        if ('configureRouter' in viewModel) {
-          if (!_this12.isConfigured) {
-            var _ret7 = function () {
-              var resolveConfiguredPromise = _this12._resolveConfiguredPromise;
-              _this12._resolveConfiguredPromise = function () {};
-              return {
-                v: {
-                  v: _this12.configure(function (config) {
-                    return viewModel.configureRouter(config, _this12);
-                  }).then(function () {
-                    _this12.activate();
-                    resolveConfiguredPromise();
-                  })
-                }
-              };
-            }();
-
-            if ((typeof _ret7 === 'undefined' ? 'undefined' : _typeof(_ret7)) === "object") return _ret7.v;
-          }
-        } else {
-          _this12.activate();
+      var viewModel = this._findViewModel(viewPort);
+      if ('configureRouter' in viewModel) {
+        if (!this.isConfigured) {
+          var resolveConfiguredPromise = this._resolveConfiguredPromise;
+          this._resolveConfiguredPromise = function () {};
+          return this.configure(function (config) {
+            return viewModel.configureRouter(config, _this12);
+          }).then(function () {
+            _this12.activate();
+            resolveConfiguredPromise();
+          });
         }
-      }();
-
-      if ((typeof _ret6 === 'undefined' ? 'undefined' : _typeof(_ret6)) === "object") return _ret6.v;
+      } else {
+        this.activate();
+      }
     } else {
       this._dequeueInstruction();
     }
@@ -1684,7 +1654,7 @@ export var AppRouter = function (_Router) {
   AppRouter.prototype._dequeueInstruction = function _dequeueInstruction() {
     var _this14 = this;
 
-    var instructionCount = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+    var instructionCount = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
     return Promise.resolve().then(function () {
       if (_this14.isNavigating && !instructionCount) {

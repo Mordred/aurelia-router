@@ -6,7 +6,7 @@ import { EventAggregator } from 'aurelia-event-aggregator';
 
 export function _normalizeAbsolutePath(path, hasPushState, absolute = false) {
   if (!hasPushState && path[0] !== '#') {
-    path = '#' + path;
+    path = '#!' + path;
   }
 
   if (hasPushState && absolute) {
@@ -48,7 +48,7 @@ export function _resolveUrl(fragment, baseUrl, hasPushState) {
   return _createRootedPath(fragment, baseUrl, hasPushState);
 }
 
-const isRootedPath = /^#?\//;
+const isRootedPath = /^#?!?\//;
 const isAbsoluteUrl = /^([a-z][a-z0-9+\-.]*:)?\/\//i;
 
 export const pipelineStatus = {
@@ -248,7 +248,7 @@ export let NavigationInstruction = class NavigationInstruction {
       let viewPort = router.viewPorts[viewPortName];
 
       if (!viewPort) {
-        throw new Error(`There was no router-view found in the view for ${ viewPortInstruction.moduleId }.`);
+        throw new Error(`There was no router-view found in the view for ${viewPortInstruction.moduleId}.`);
       }
 
       if (viewPortInstruction.strategy === activationStrategy.replace) {
@@ -529,7 +529,7 @@ export function _buildNavigationPlan(instruction, forceLifecycleMinimum) {
       let prevViewPortInstruction = prev.viewPortInstructions[viewPortName];
       let nextViewPortConfig = config.viewPorts[viewPortName];
 
-      if (!nextViewPortConfig) throw new Error(`Invalid Route Config: Configuration for viewPort "${ viewPortName }" was not found for route: "${ instruction.config.route }."`);
+      if (!nextViewPortConfig) throw new Error(`Invalid Route Config: Configuration for viewPort "${viewPortName}" was not found for route: "${instruction.config.route}."`);
 
       let viewPortPlan = plan[viewPortName] = {
         name: viewPortName,
@@ -738,12 +738,12 @@ export let Router = class Router {
     }
 
     if (!hasRoute) {
-      throw new Error(`A route with name '${ name }' could not be found. Check that \`name: '${ name }'\` was specified in the route's config.`);
+      throw new Error(`A route with name '${name}' could not be found. Check that \`name: '${name}'\` was specified in the route's config.`);
     }
 
     let path = this._recognizer.generate(name, params);
     let rootedPath = _createRootedPath(path, this.baseUrl, this.history._hasPushState, options.absolute);
-    return options.absolute ? `${ this.history.getAbsoluteRoot() }${ rootedPath }` : rootedPath;
+    return options.absolute ? `${this.history.getAbsoluteRoot()}${rootedPath}` : rootedPath;
   }
 
   createNavModel(config) {
@@ -787,7 +787,7 @@ export let Router = class Router {
       delete config.settings;
       let withChild = JSON.parse(JSON.stringify(config));
       config.settings = settings;
-      withChild.route = `${ path }/*childRoute`;
+      withChild.route = `${path}/*childRoute`;
       withChild.hasChildRouter = true;
       this._childRecognizer.add({
         path: withChild.route,
@@ -919,7 +919,7 @@ export let Router = class Router {
       return evaluateNavigationStrategy(instruction, this.catchAllHandler);
     }
 
-    return Promise.reject(new Error(`Route not found: ${ url }`));
+    return Promise.reject(new Error(`Route not found: ${url}`));
   }
 
   _createRouteConfig(config, instruction) {
@@ -1341,7 +1341,7 @@ export let PipelineProvider = class PipelineProvider {
         found.steps.push(step);
       }
     } else {
-      throw new Error(`Invalid pipeline slot name: ${ name }.`);
+      throw new Error(`Invalid pipeline slot name: ${name}.`);
     }
   }
 
@@ -1468,7 +1468,7 @@ export let AppRouter = class AppRouter extends Router {
       if (!instructionCount) {
         this.events.publish('router:navigation:processing', { instruction });
       } else if (instructionCount === this.maxInstructionCount - 1) {
-        logger.error(`${ instructionCount + 1 } navigation instructions have been attempted without success. Restoring last known good location.`);
+        logger.error(`${instructionCount + 1} navigation instructions have been attempted without success. Restoring last known good location.`);
         restorePreviousLocation(this);
         return this._dequeueInstruction(instructionCount + 1);
       } else if (instructionCount > this.maxInstructionCount) {
@@ -1508,7 +1508,7 @@ export let AppRouter = class AppRouter extends Router {
 function processResult(instruction, result, instructionCount, router) {
   if (!(result && 'completed' in result && 'output' in result)) {
     result = result || {};
-    result.output = new Error(`Expected router pipeline to return a navigation result, but got [${ JSON.stringify(result) }] instead.`);
+    result.output = new Error(`Expected router pipeline to return a navigation result, but got [${JSON.stringify(result)}] instead.`);
   }
 
   let finalResult = null;
@@ -1550,7 +1550,7 @@ function resolveInstruction(instruction, result, isInnerInstruction, router) {
       eventName = 'success';
     }
 
-    router.events.publish(`router:navigation:${ eventName }`, eventArgs);
+    router.events.publish(`router:navigation:${eventName}`, eventArgs);
     router.events.publish('router:navigation:complete', eventArgs);
   } else {
     router.events.publish('router:navigation:child:complete', eventArgs);

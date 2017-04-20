@@ -1,6 +1,6 @@
 export function _normalizeAbsolutePath(path, hasPushState, absolute = false) {
   if (!hasPushState && path[0] !== '#') {
-    path = '#' + path;
+    path = '#!' + path;
   }
 
   if (hasPushState && absolute) {
@@ -42,5 +42,5 @@ export function _resolveUrl(fragment, baseUrl, hasPushState) {
   return _createRootedPath(fragment, baseUrl, hasPushState);
 }
 
-const isRootedPath = /^#?\//;
+const isRootedPath = /^#?!?\//;
 const isAbsoluteUrl = /^([a-z][a-z0-9+\-.]*:)?\/\//i;
